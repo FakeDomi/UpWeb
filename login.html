@@ -1,0 +1,63 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>login - up web app</title>
+        <script>
+            function tryLogin() {
+                let req = new XMLHttpRequest();
+                req.open("POST", "api/login", true);
+                req.overrideMimeType("text/plain");
+                req.onload = function() {
+                    if (req.responseText === "ok") {
+                        document.location.href = "/home";
+                    }
+                    else {
+                        document.getElementById("error-text").classList.remove("hidden");
+                    }
+                };
+                req.send(`${document.getElementById("user").value}\n${document.getElementById("pass").value}`);
+            }
+
+            function keyDown(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    tryLogin();
+                }
+                else {
+                    document.getElementById("error-text").classList.add("hidden");
+                }
+            }
+
+            window.onload = function() {
+                document.getElementById("user").focus();
+            };
+        </script>
+    </head>
+    <body>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="svg">
+                            <svg width="256px" height="256px" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M96,41 L16,212 L106,212 L128,152 L150,212 L238,212 L160,41 Z" fill="#FFFFFF"></path>
+                                <path d="M108,56 L44,197 L92,197 L128,108 L164,197 L212,197 L148,56 Z" fill="#000000"></path>
+                            </svg>
+                        </div>
+                        <div id="error-text" class="hidden spacer-below fadein-out">
+                            username and password do not match.
+                        </div>
+                        <div id="login-box">
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input type="text" id="user" class="spacer-below" placeholder="username" onkeydown="keyDown(event)"><br>
+                            <!--suppress HtmlFormInputWithoutLabel -->
+                            <input type="password" id="pass" class="spacer-below" placeholder="password" onkeydown="keyDown(event)"><br>
+                            <div id="login-button" class="button right half" onclick="tryLogin()">login</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
