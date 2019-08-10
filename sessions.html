@@ -1,0 +1,80 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>sessions - up web app</title>
+    <script>
+        window.onload = function () {
+            let req = new XMLHttpRequest();
+            req.open("GET", "api/get-sessions", true);
+            req.overrideMimeType("text/plain");
+            req.onload = function () {
+                if (req.status === 200) {
+                    req.responseText.split("\n").forEach(function (sessionString) {
+                        let session = sessionString.split(";");
+
+                        if (session.length === 4) {
+                            let row = document.createElement("tr");
+                            row.setAttribute("data-id", session[0]);
+                            document.getElementById("session-table").appendChild(row);
+
+                            let firstLogin = document.createElement("td");
+                            firstLogin.innerText = session[1];
+                            row.appendChild(firstLogin);
+
+                            let lastActivity = document.createElement("td");
+                            lastActivity.innerText = session[2];
+                            row.appendChild(lastActivity);
+
+                            let lastIP = document.createElement("td");
+                            lastIP.innerText = session[3];
+                            row.appendChild(lastIP);
+
+                            let endSession = document.createElement("td");
+                            let button = document.createElement("div");
+                            button.innerText = "end session";
+                            button.classList.add("button", "slim");
+                            button.onclick = function () {
+                                clickEndSession(this);
+                            };
+                            endSession.appendChild(button);
+                            row.appendChild(endSession);
+                        }
+                    });
+                }
+            };
+            req.send(null);
+        };
+
+        function clickEndSession(button) {
+
+        }
+    </script>
+</head>
+<body>
+<div id="navbar">
+    <a class="navbar-element" href="home">home</a>
+    <a class="navbar-element" href="files">files</a>
+    <a class="navbar-element nav-active" href="sessions">sessions</a>
+    <a class="navbar-element nav-right" href="logout">logout</a>
+</div>
+<div id="content">
+    <table id="session-table" class="data-table">
+        <colgroup>
+            <col class="col-30">
+            <col class="col-30">
+            <col class="col-20">
+            <col class="col-20">
+        </colgroup>
+        <tbody>
+        <tr>
+            <th>first login</th>
+            <th>last activity</th>
+            <th>last ip</th>
+            <th>actions</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
