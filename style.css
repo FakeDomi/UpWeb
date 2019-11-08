@@ -39,8 +39,7 @@ body {
 }
 
 .data-table td {
-    padding: 8px;
-    padding-bottom: 0;
+    padding: 8px 8px 0;
 }
 
 #content {
@@ -55,7 +54,7 @@ body {
     margin: 0 auto;
 }
 
-#error-text {
+.error-text {
     color: #b33636;
 }
 
@@ -75,6 +74,9 @@ input {
     transition-property: box-shadow, background-color;
     width: 250px;
     font-family: inherit;
+    /* Overwrite Firefox autocomplete colors
+       https://stackoverflow.com/questions/55228377 */
+    filter: none;
 }
 
 input:focus {

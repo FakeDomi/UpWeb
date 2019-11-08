@@ -12,7 +12,9 @@
             req.onload = function () {
                 if (req.status === 200) {
                     document.cookie = "session=;max-age=0;path=/";
-                    document.location.href = "/login";
+                    setTimeout(function () {
+                        document.location.href = "/login";
+                    }, 500);
                 }
             };
             req.send(`${session}\n${session}`);

@@ -12,7 +12,7 @@
                 if (req.responseText === "ok") {
                     document.location.href = "/home";
                 } else {
-                    document.getElementById("error-text").classList.remove("hidden");
+                    document.getElementById("login-error").classList.remove("hidden");
                 }
             };
             req.send(`${getCookie("session")}\n${document.getElementById("user").value}\n${document.getElementById("pass").value}`);
@@ -23,7 +23,7 @@
                 e.preventDefault();
                 tryLogin();
             } else {
-                document.getElementById("error-text").classList.add("hidden");
+                document.getElementById("login-error").classList.add("hidden");
             }
         }
 
@@ -48,13 +48,18 @@
                     <path d="M108,56 L44,197 L92,197 L128,108 L164,197 L212,197 L148,56 Z" fill="#000000"></path>
                 </svg>
             </div>
-            <div id="error-text" class="hidden spacer-below fadein-out">
+            <noscript>
+                <div class="error-text">
+                    i'm sorry but this site needs javascript :/
+                </div>
+            </noscript>
+            <div id="login-error" class="hidden error-text spacer-below fadein-out">
                 username and password do not match.
             </div>
             <div id="login-box">
-                <!--suppress HtmlFormInputWithoutLabel -->
+                <!--suppress HtmlFormInputWithoutLabel, JSDeprecatedSymbols -->
                 <input type="text" id="user" class="spacer-below" placeholder="username" onkeydown="keyDown(event)"><br>
-                <!--suppress HtmlFormInputWithoutLabel -->
+                <!--suppress HtmlFormInputWithoutLabel, JSDeprecatedSymbols -->
                 <input type="password" id="pass" class="spacer-below" placeholder="password" onkeydown="keyDown(event)"><br>
                 <div id="login-button" class="button right half" onclick="tryLogin()">login</div>
             </div>
