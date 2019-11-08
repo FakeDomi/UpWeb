@@ -15,7 +15,7 @@
                     document.getElementById("error-text").classList.remove("hidden");
                 }
             };
-            req.send(`${document.getElementById("user").value}\n${document.getElementById("pass").value}`);
+            req.send(`${getCookie("session")}\n${document.getElementById("user").value}\n${document.getElementById("pass").value}`);
         }
 
         function keyDown(e) {
@@ -30,6 +30,11 @@
         window.onload = function () {
             document.getElementById("user").focus();
         };
+
+        function getCookie(name) {
+            let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+            return b ? b.pop() : "";
+        }
     </script>
 </head>
 <body>

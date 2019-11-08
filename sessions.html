@@ -6,7 +6,7 @@
     <script>
         window.onload = function () {
             let req = new XMLHttpRequest();
-            req.open("GET", "api/get-sessions", true);
+            req.open("POST", "api/get-sessions", true);
             req.overrideMimeType("text/plain");
             req.onload = function () {
                 if (req.status === 200) {
@@ -43,11 +43,33 @@
                     });
                 }
             };
-            req.send(null);
+            req.send(getCookie("session"));
         };
 
         function clickEndSession(button) {
+            let row = button.parentElement.parentElement;
+            let session = row.getAttribute("data-id");
 
+            let req = new XMLHttpRequest();
+            req.open("POST", "api/end-session", true);
+            req.overrideMimeType("text/plain");
+            req.onload = function () {
+                if (req.status === 200) {
+                    if (req.responseText === "ok") {
+                        row.remove();
+                    }
+                    else if (req.responseText === "redirect") {
+                        row.remove();
+                        document.location.href = "/login";
+                    }
+                }
+            };
+            req.send(`${getCookie("session")}\n${session}`);
+        }
+
+        function getCookie(name) {
+            let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+            return b ? b.pop() : "";
         }
     </script>
 </head>

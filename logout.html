@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>logout - up web app</title>
+    <script>
+        window.onload = function () {
+            let session = getCookie("session");
+            let req = new XMLHttpRequest();
+            req.open("POST", "api/end-session", true);
+            req.overrideMimeType("text/plain");
+            req.onload = function () {
+                if (req.status === 200) {
+                    document.cookie = "session=;max-age=0;path=/";
+                    document.location.href = "/login";
+                }
+            };
+            req.send(`${session}\n${session}`);
+        };
+
+        function getCookie(name) {
+            let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+            return b ? b.pop() : "";
+        }
+    </script>
+</head>
+<body>
+<table class="center-table">
+    <tbody>
+    <tr>
+        <td>
+            You are being logged out...
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
