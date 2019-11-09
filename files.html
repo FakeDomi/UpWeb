@@ -1,0 +1,105 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>files - up web app</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="fluid-icon" href="logo.png" type="image/png" sizes="256x256">
+    <script>
+        window.onload = function () {
+            let req = new XMLHttpRequest();
+            req.open("POST", "api/get-files", true);
+            req.overrideMimeType("text/plain");
+            req.onload = function () {
+                if (req.status === 200) {
+                    let split = req.responseText.split("\n");
+                    let fragment = document.createDocumentFragment();
+
+                    let linkFormat = split[0];
+
+                    for (let i = 1; i < split.length - 4; i += 5) {
+                        let row = document.createElement("tr");
+                        row.setAttribute("data-id", split[i]);
+
+                        let fileName = document.createElement("td");
+                        let fileNameLink = document.createElement("a");
+                        fileNameLink.href = linkFormat.replace("{0}", split[i]);
+                        fileNameLink.innerText = split[i + 4];
+                        fileName.appendChild(fileNameLink);
+                        row.appendChild(fileName);
+
+                        let size = document.createElement("td");
+                        size.innerText = split[i + 1];
+                        row.appendChild(size);
+
+                        let downloads = document.createElement("td");
+                        downloads.innerText = split[i + 2];
+                        row.appendChild(downloads);
+
+                        let date = document.createElement("td");
+                        date.innerText = split[i + 3];
+                        row.appendChild(date);
+
+                        fragment.appendChild(row);
+                    }
+
+                    document.getElementById("file-table").appendChild(fragment);
+                }
+            };
+            req.send(getCookie("session"));
+        };
+
+        function clickEndSession(button) {
+            let row = button.parentElement.parentElement;
+            let session = row.getAttribute("data-id");
+
+            let req = new XMLHttpRequest();
+            req.open("POST", "api/end-session", true);
+            req.overrideMimeType("text/plain");
+            req.onload = function () {
+                if (req.status === 200) {
+                    if (req.responseText === "ok") {
+                        row.remove();
+                    }
+                    else if (req.responseText === "redirect") {
+                        row.remove();
+                        document.location.href = "/login";
+                    }
+                }
+            };
+            req.send(`${getCookie("session")}\n${session}`);
+        }
+
+        function getCookie(name) {
+            let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+            return b ? b.pop() : "";
+        }
+    </script>
+</head>
+<body>
+<div id="navbar">
+    <a class="navbar-element" href="home">home</a>
+    <a class="navbar-element nav-active" href="files">files</a>
+    <a class="navbar-element" href="sessions">sessions</a>
+    <a class="navbar-element nav-right" href="logout">logout</a>
+</div>
+<div id="content">
+    <table id="file-table" class="data-table">
+        <colgroup>
+            <col class="col-50">
+            <col class="col-10">
+            <col class="col-10">
+            <col class="col-30">
+        </colgroup>
+        <tbody>
+        <tr>
+            <th>file name</th>
+            <th>size</th>
+            <th>dls</th>
+            <th>upload date</th>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
