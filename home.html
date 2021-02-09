@@ -5,7 +5,100 @@
     <title>home - up web app</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="fluid-icon" href="logo.png" type="image/png" sizes="256x256">
-    <script></script>
+    <script>
+        window.onload = function () {
+            let dropbox = document.getElementById("drop-box");
+            let references = 0;
+
+            dropbox.addEventListener("dragenter", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                references++;
+                dropbox.classList.add("dropping");
+            }, false);
+
+            dropbox.addEventListener("dragleave", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                references--;
+                if (references === 0)
+                {
+                    dropbox.classList.remove("dropping");
+                }
+            }, false);
+
+            dropbox.addEventListener("dragover", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+            }, false);
+
+            dropbox.addEventListener("drop", function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                uploadFile(e.dataTransfer.files[0]);
+                dropbox.classList.remove("dropping");
+            });
+
+            dropbox.addEventListener("click", function() {
+                document.getElementById("file-select").click();
+            }, false);
+
+            document.getElementById("file-select").addEventListener("change", function(e) {
+                if (e.target.files.length > 0) {
+                    uploadFile(e.target.files[0]);
+                }
+            }, false);
+        };
+        
+        function getCookie(name) {
+            let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+            return b ? b.pop() : "";
+        }
+
+        function uploadFile(file) {                
+            let req = new XMLHttpRequest();
+            req.open("POST", "api/upload-file");
+            req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", getCookie("session"));
+            req.setRequestHeader("x-up-filename", file.name);
+            req.onload = function () {
+                if (req.status === 200) {
+                    let fileLink = req.getResponseHeader("x-up-file-link");
+
+                    let row = document.createElement("div");
+                    row.classList.add("upload-line");
+
+                    row.appendChild(document.createTextNode(file.name + " - "));
+
+                    let link = document.createElement("a");
+                    link.setAttribute("href", fileLink);
+                    link.innerText = fileLink;
+                    row.appendChild(link);
+
+                    row.appendChild(document.createTextNode(" - "));
+
+                    let copyButton = document.createElement("div");
+                    copyButton.innerText = "copy";
+                    copyButton.classList.add("button", "slim");
+                    copyButton.onclick = function () {
+                        let hugeJavascriptFan = document.createElement("input");
+                        document.body.appendChild(hugeJavascriptFan);
+                        hugeJavascriptFan.value = fileLink;
+                        hugeJavascriptFan.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(hugeJavascriptFan);
+                    };
+
+                    row.appendChild(copyButton);
+
+                    document.getElementById("content").appendChild(row);
+                }
+            };
+            req.send(file);
+        }
+    </script>
 </head>
 <body>
 <div id="navbar">
@@ -15,7 +108,10 @@
     <a class="navbar-element nav-right" href="logout">logout</a>
 </div>
 <div id="content">
-    Hello, user. On this page there is no content yet.
+    <div id="drop-box">
+        click here or drop a file to upload it
+    </div>
 </div>
+<input id="file-select" type="file"/>
 </body>
 </html>

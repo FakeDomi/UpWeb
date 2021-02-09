@@ -11,15 +11,19 @@
             let req = new XMLHttpRequest();
             req.open("POST", "api/end-session", true);
             req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", session);
+            req.setRequestHeader("x-up-end-session", session);
             req.onload = function () {
-                if (req.status === 200) {
+                if (req.getResponseHeader("x-up-result") === "redirect") {
                     document.cookie = "session=;max-age=0;path=/";
                     setTimeout(function () {
                         document.location.href = "/login";
                     }, 500);
+                } else {
+                    alert("unexpected server or connection error.");
                 }
             };
-            req.send(`${session}\n${session}`);
+            req.send();
         };
 
         function getCookie(name) {

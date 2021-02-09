@@ -10,14 +10,20 @@
             let req = new XMLHttpRequest();
             req.open("POST", "api/login", true);
             req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", getCookie("session"));
+            req.setRequestHeader("x-up-login-user", document.getElementById("user").value);
+            req.setRequestHeader("x-up-login-password", document.getElementById("pass").value);
             req.onload = function () {
-                if (req.responseText === "ok") {
+                let result = req.getResponseHeader("x-up-result");
+                if (result === "ok") {
                     document.location.href = "/home";
-                } else {
+                } else if (result === "failed") {
                     document.getElementById("login-error").classList.remove("hidden");
+                } else {
+                    alert("unexpected server or connection error.");
                 }
             };
-            req.send(`${getCookie("session")}\n${document.getElementById("user").value}\n${document.getElementById("pass").value}`);
+            req.send();
         }
 
         function keyDown(e) {

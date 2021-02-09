@@ -10,6 +10,7 @@
             let req = new XMLHttpRequest();
             req.open("POST", "api/get-files", true);
             req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", getCookie("session"));
             req.onload = function () {
                 if (req.status === 200) {
                     let split = req.responseText.split("\n");
@@ -46,29 +47,8 @@
                     document.getElementById("file-table").appendChild(fragment);
                 }
             };
-            req.send(getCookie("session"));
+            req.send();
         };
-
-        function clickEndSession(button) {
-            let row = button.parentElement.parentElement;
-            let session = row.getAttribute("data-id");
-
-            let req = new XMLHttpRequest();
-            req.open("POST", "api/end-session", true);
-            req.overrideMimeType("text/plain");
-            req.onload = function () {
-                if (req.status === 200) {
-                    if (req.responseText === "ok") {
-                        row.remove();
-                    }
-                    else if (req.responseText === "redirect") {
-                        row.remove();
-                        document.location.href = "/login";
-                    }
-                }
-            };
-            req.send(`${getCookie("session")}\n${session}`);
-        }
 
         function getCookie(name) {
             let b = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");

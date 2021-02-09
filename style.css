@@ -204,3 +204,35 @@ a:hover {
 .data-table tr:nth-child(even) {
     background-color: #323235;
 }
+
+#drop-box {
+    background-color: #252526;
+    border: 2px solid #434346;
+    border-radius: 4px;
+    padding: 48px 4px;
+    font-size: x-large;
+    text-align: center;
+    transition-duration: 0.2s;
+    transition-property: box-shadow, background-color;
+    margin-bottom: 40px;
+}
+
+#drop-box:hover {
+    background-color: #2d2d30;
+    box-shadow: 0 0 3px 3px #0080C0;
+    cursor: pointer;
+}
+
+#drop-box.dropping {
+    background-color: #2d2d30;
+    box-shadow: 0 0 3px 3px #0080C0;
+    cursor: pointer;
+}
+
+.upload-line {
+    margin: 4px 0;
+}
+
+#file-select {
+    display: none;
+}

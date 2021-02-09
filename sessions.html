@@ -10,6 +10,7 @@
             let req = new XMLHttpRequest();
             req.open("POST", "api/get-sessions", true);
             req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", getCookie("session"));
             req.onload = function () {
                 if (req.status === 200) {
                     req.responseText.split("\n").forEach(function (sessionString) {
@@ -45,7 +46,7 @@
                     });
                 }
             };
-            req.send(getCookie("session"));
+            req.send();
         };
 
         function clickEndSession(button) {
@@ -55,18 +56,21 @@
             let req = new XMLHttpRequest();
             req.open("POST", "api/end-session", true);
             req.overrideMimeType("text/plain");
+            req.setRequestHeader("x-up-session", getCookie("session"));
+            req.setRequestHeader("x-up-end-session", session);
             req.onload = function () {
                 if (req.status === 200) {
-                    if (req.responseText === "ok") {
+                    let result = req.getResponseHeader("x-up-result");
+                    if (result === "ok") {
                         row.remove();
                     }
-                    else if (req.responseText === "redirect") {
+                    else if (result === "redirect") {
                         row.remove();
                         document.location.href = "/login";
                     }
                 }
             };
-            req.send(`${getCookie("session")}\n${session}`);
+            req.send();
         }
 
         function getCookie(name) {
