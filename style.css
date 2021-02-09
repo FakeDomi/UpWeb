@@ -3,13 +3,10 @@
     src: url('custom-font');
 }
 
-html {
+html, body {
     background-color: #2d2d30;
     color: #f1f1f1;
     font-family: Custom, sans-serif;
-}
-
-body {
     margin: 0;
 }
 
