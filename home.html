@@ -10,30 +10,29 @@
             let dropbox = document.getElementById("drop-box");
             let references = 0;
 
-            dropbox.addEventListener("dragenter", function(e) {
+            dropbox.addEventListener("dragenter", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 references++;
                 dropbox.classList.add("dropping");
             }, false);
 
-            dropbox.addEventListener("dragleave", function(e) {
+            dropbox.addEventListener("dragleave", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 references--;
-                if (references === 0)
-                {
+                if (references === 0) {
                     dropbox.classList.remove("dropping");
                 }
             }, false);
 
-            dropbox.addEventListener("dragover", function(e) {
+            dropbox.addEventListener("dragover", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 e.dataTransfer.dropEffect = "copy";
             }, false);
 
-            dropbox.addEventListener("drop", function(e) {
+            dropbox.addEventListener("drop", function (e) {
                 e.stopPropagation();
                 e.preventDefault();
 
@@ -41,11 +40,11 @@
                 dropbox.classList.remove("dropping");
             });
 
-            dropbox.addEventListener("click", function() {
+            dropbox.addEventListener("click", function () {
                 document.getElementById("file-select").click();
             }, false);
 
-            document.getElementById("file-select").addEventListener("change", function(e) {
+            document.getElementById("file-select").addEventListener("change", function (e) {
                 if (e.target.files.length > 0) {
                     uploadFile(e.target.files[0]);
                 }
@@ -57,43 +56,68 @@
             return b ? b.pop() : "";
         }
 
-        function uploadFile(file) {                
+        function uploadFile(file) {
             let req = new XMLHttpRequest();
+            let row = document.createElement("div");
+            row.classList.add("upload-line");
+            row.appendChild(document.createTextNode(file.name + " - "));
+            let progressBarContainer = document.createElement("div");
+            progressBarContainer.classList.add("progress-bar");
+            let progressBar = document.createElement("div");
+            progressBar.classList.add("progress-bar-color");
+
+            progressBarContainer.appendChild(progressBar);
+            row.appendChild(progressBarContainer);
+            document.getElementById("content").appendChild(row);
+
             req.open("POST", "api/upload-file");
             req.overrideMimeType("text/plain");
             req.setRequestHeader("x-up-session", getCookie("session"));
             req.setRequestHeader("x-up-filename", file.name);
             req.onload = function () {
-                if (req.status === 200) {
+                if (req.status === 200 && req.getResponseHeader("x-up-result") === "ok") {
                     let fileLink = req.getResponseHeader("x-up-file-link");
 
-                    let row = document.createElement("div");
-                    row.classList.add("upload-line");
+                    progressBar.style.width = "100%";
+                    progressBarContainer.style.opacity = "0%";
 
-                    row.appendChild(document.createTextNode(file.name + " - "));
+                    setTimeout(function () {
+                        // Removes the progress bar
+                        row.lastChild.remove();
 
-                    let link = document.createElement("a");
-                    link.setAttribute("href", fileLink);
-                    link.innerText = fileLink;
-                    row.appendChild(link);
+                        let link = document.createElement("a");
+                        link.setAttribute("href", fileLink);
+                        link.innerText = fileLink;
+                        row.appendChild(link);
 
-                    row.appendChild(document.createTextNode(" - "));
+                        row.appendChild(document.createTextNode(" - "));
 
-                    let copyButton = document.createElement("div");
-                    copyButton.innerText = "copy";
-                    copyButton.classList.add("button", "slim");
-                    copyButton.onclick = function () {
-                        let hugeJavascriptFan = document.createElement("input");
-                        document.body.appendChild(hugeJavascriptFan);
-                        hugeJavascriptFan.value = fileLink;
-                        hugeJavascriptFan.select();
-                        document.execCommand("copy");
-                        document.body.removeChild(hugeJavascriptFan);
-                    };
+                        let copyButton = document.createElement("div");
+                        copyButton.innerText = "copy";
+                        copyButton.classList.add("button", "slim");
+                        copyButton.onclick = function () {
+                            let hugeJavascriptFan = document.createElement("input");
+                            document.body.appendChild(hugeJavascriptFan);
+                            hugeJavascriptFan.value = fileLink;
+                            hugeJavascriptFan.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(hugeJavascriptFan);
+                        };
 
-                    row.appendChild(copyButton);
+                        row.appendChild(copyButton);
+                    }, 200);
+                } else {
+                    alert(`unexpected server or connection error.
+status code: ${req.status}
+message: ${req.getResponseHeader("x-up-error-message")}`);
 
-                    document.getElementById("content").appendChild(row);
+                    row.lastChild.remove();
+                    row.appendChild(document.createTextNode(`${req.status} ${req.getResponseHeader("x-up-error-message")}`));
+                }
+            };
+            req.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    progressBar.style.width = Math.ceil((e.loaded / e.total) * 100) + "%";
                 }
             };
             req.send(file);

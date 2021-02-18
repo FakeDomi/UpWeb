@@ -228,8 +228,34 @@ a:hover {
 
 .upload-line {
     margin: 4px 0;
+    height: 25px;
 }
 
 #file-select {
     display: none;
+}
+
+.progress-bar {
+    display: inline-block;
+    width: 250px;
+    height: 18px;
+    vertical-align: middle;
+    background-color: #252526;
+    border: 2px solid #434346;
+    transition: opacity 0.2s;
+}
+
+.progress-bar-color {
+    display: inline-block;
+    height: 100%;
+    background-color: #0080C0;
+    box-shadow: 0 0 2px 2px #0070A8 inset;
+    transition: width 0.2s;
+}
+
+.upload-line .slim {
+    /* offset so the text baseline doesn't change when the button loads in */
+    vertical-align: middle;
+    margin-top: -2px;
+    margin-left: 2px;
 }
